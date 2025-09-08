@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:jspm_pulse/core/widgets/app_btn.dart';
+import 'package:jspm_pulse/features/profile/presentation/pages/create_notice_page.dart';
 
 class BottomSheetCont extends StatelessWidget {
   const BottomSheetCont({super.key});
@@ -27,7 +28,13 @@ class BottomSheetCont extends StatelessWidget {
           ),
           SizedBox(height: 15),
           ListTile(
-            onTap: () {},
+            onTap: () {
+              Navigator.pop(context);
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => CreateNoticePage()),
+              );
+            },
             leading: Icon(CupertinoIcons.person_crop_circle_fill, size: 35),
             title: Text("Profile", style: TextStyle(fontSize: 20)),
           ),

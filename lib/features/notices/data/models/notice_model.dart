@@ -12,7 +12,6 @@ class NoticeModel extends Notice {
     required super.visibleTo,
   });
 
-  // Supabase row -> Model
   factory NoticeModel.fromMap(Map<String, dynamic> map) {
     return NoticeModel(
       id: map['id'] as String?,

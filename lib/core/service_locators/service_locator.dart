@@ -16,6 +16,12 @@ import 'package:jspm_pulse/features/notices/domain/usecases/fetch_all_notices_st
 import 'package:jspm_pulse/features/notices/domain/usecases/notice_usecases.dart';
 import 'package:jspm_pulse/features/notices/domain/usecases/update_notice_usecase.dart';
 import 'package:jspm_pulse/features/notices/presentation/bloc/notice_bloc.dart';
+import 'package:jspm_pulse/features/profile/data/datasource/profile_datasaurce.dart';
+import 'package:jspm_pulse/features/profile/data/repositories/profile_repo_impl.dart';
+import 'package:jspm_pulse/features/profile/domain/repositories/profile_repo.dart';
+import 'package:jspm_pulse/features/profile/domain/usecases/get_profile_usecase.dart';
+import 'package:jspm_pulse/features/profile/domain/usecases/update_profile_pic_usecase.dart';
+import 'package:jspm_pulse/features/profile/domain/usecases/update_profile_usecase.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 final getIt = GetIt.instance;
@@ -69,5 +75,25 @@ void setupLocator() {
 
   getIt.registerLazySingleton<NoticeBloc>(
     () => NoticeBloc(getIt<NoticeUsecases>()),
+  );
+
+  // P R O F I L E
+
+  getIt.registerLazySingleton<ProfileDatasaurce>(
+    () => ProfileDatasaurce(getIt<SupabaseClient>()),
+  );
+
+  getIt.registerLazySingleton<ProfileRepository>(
+    () => ProfileRepoImpl(getIt<ProfileDatasaurce>()),
+  );
+
+  getIt.registerLazySingleton<GetProfileUseCase>(
+    () => GetProfileUseCase(getIt<ProfileRepoImpl>()),
+  );
+  getIt.registerLazySingleton<UpdateProfilePicUseCase>(
+    () => UpdateProfilePicUseCase(getIt<ProfileRepoImpl>()),
+  );
+  getIt.registerLazySingleton<UpdateProfileUseCase>(
+    () => UpdateProfileUseCase(getIt<ProfileRepoImpl>()),
   );
 }

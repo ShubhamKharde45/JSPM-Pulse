@@ -1,14 +1,11 @@
 import 'dart:io';
 
 import 'package:jspm_pulse/core/errors/server_errors.dart';
-import 'package:jspm_pulse/features/profile/domain/entities/profile_entity.dart';
+import 'package:jspm_pulse/features/profile/data/models/student_profile.dart';
 
 abstract class ProfileRepository {
-  Future<ServerResult> updateProfile(StudentProfileEntity studentProfileEntity);
+  Future<ServerResult> updateProfile(Profile profile);
+  Future<ServerResult<Profile>> getProfile(String id);
 
-  Future<ServerResult> updateProfilePic(
-    StudentProfileEntity studentProfileEntity,
-    File file,
-    String fileType,
-  );
+  Future<ServerResult> updateProfilePic(Profile profile, File file);
 }
