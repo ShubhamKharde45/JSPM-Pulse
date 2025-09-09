@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:jspm_pulse/core/service_locators/service_locator.dart';
 import 'package:jspm_pulse/features/auth/domain/UseCases/auth_usecases.dart';
+import 'package:jspm_pulse/features/auth/domain/UseCases/get_current_user_usecase.dart';
 import 'package:jspm_pulse/features/auth/presentation/Bloc/auth_bloc.dart';
 import 'package:jspm_pulse/features/auth/presentation/Bloc/auth_events.dart';
 import 'package:jspm_pulse/features/auth/presentation/Bloc/auth_state.dart';
@@ -10,6 +11,12 @@ import 'package:jspm_pulse/features/home/presentation/pages/home_screen.dart';
 import 'package:jspm_pulse/features/notices/domain/usecases/notice_usecases.dart';
 import 'package:jspm_pulse/features/notices/presentation/bloc/notice_bloc.dart';
 import 'package:jspm_pulse/features/notices/presentation/bloc/notice_events.dart';
+import 'package:jspm_pulse/features/profile/domain/usecases/get_profile_usecase.dart';
+import 'package:jspm_pulse/features/profile/domain/usecases/update_profile_pic_usecase.dart';
+import 'package:jspm_pulse/features/profile/domain/usecases/update_profile_usecase.dart';
+import 'package:jspm_pulse/features/profile/presentation/bloc/profile_bloc.dart';
+import 'package:jspm_pulse/features/profile/presentation/bloc/profile_events.dart';
+import 'package:jspm_pulse/features/profile/presentation/pages/profile_screen.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 void main() async {
@@ -40,6 +47,14 @@ class JSPMPulse extends StatelessWidget {
               NoticeBloc(getIt<NoticeUsecases>())
                 ..add(FetchAllNoticesStreamEvent(["Students"])),
         ),
+
+        BlocProvider(
+          create: (_) => ProfileBloc(
+            getIt<GetProfileUseCase>(),
+            getIt<UpdateProfileUseCase>(),
+            getIt<UpdateProfilePicUseCase>(),
+          )..add(FetchProfileEvent(id: "d15839af-f50d-4e5d-a8c4-ef6c707348bc")),
+        ),
       ],
       child: MaterialApp(
         debugShowCheckedModeBanner: false,
@@ -49,7 +64,7 @@ class JSPMPulse extends StatelessWidget {
               return Scaffold(body: Center(child: CircularProgressIndicator()));
             }
             if (state is AuthSuccess) {
-              return const HomeScreen();
+              return const ProfileScreen();
             }
             return const LogInScreen();
           },

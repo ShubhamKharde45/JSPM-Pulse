@@ -83,7 +83,7 @@ void setupLocator() {
     () => ProfileDatasaurce(getIt<SupabaseClient>()),
   );
 
-  getIt.registerLazySingleton<ProfileRepository>(
+  getIt.registerLazySingleton<ProfileRepoImpl>(
     () => ProfileRepoImpl(getIt<ProfileDatasaurce>()),
   );
 

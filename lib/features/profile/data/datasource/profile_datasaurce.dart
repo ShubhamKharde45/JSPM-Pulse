@@ -2,7 +2,7 @@ import 'dart:io';
 
 import 'package:flutter/foundation.dart';
 import 'package:jspm_pulse/core/errors/server_errors.dart';
-import 'package:jspm_pulse/features/profile/data/models/student_profile.dart';
+import 'package:jspm_pulse/features/profile/data/models/profile_model.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 class ProfileDatasaurce {
@@ -64,14 +64,13 @@ class ProfileDatasaurce {
   Future<ServerResult<Profile>> getProfile(String id) async {
     try {
       final response = await _client.from("users").select().eq('id', id);
-      final data = Profile.fromMap(response.first);
-
+      Map<String, dynamic> dt = response.elementAt(0);
+      final data = Profile.fromMap(dt);
       final signedUrl = await _client.storage
           .from("attachments")
-          .createSignedUrl(data.profilePicUrl ?? "dummy/profile.png", 60);
+          .createSignedUrl(data.profilePic ?? "dummy/profile.png", 60);
 
-      data.profilePicUrl = signedUrl;
-
+      data.profilePic = signedUrl;
       return ServerSuccess(data); // data is profile here
     } catch (e) {
       return ServerFailure(message: "Error : ${e.toString()}");
