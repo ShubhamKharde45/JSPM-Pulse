@@ -64,7 +64,7 @@ class JSPMPulse extends StatelessWidget {
               return Scaffold(body: Center(child: CircularProgressIndicator()));
             }
             if (state is AuthSuccess) {
-              return const ProfileScreen();
+              return const HomeScreen();
             }
             return const LogInScreen();
           },

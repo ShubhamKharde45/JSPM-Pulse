@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:jspm_pulse/core/errors/server_errors.dart';
 import 'package:jspm_pulse/features/notices/data/datasource/notices_remote_datasource.dart';
 import 'package:jspm_pulse/features/notices/data/models/notice_model.dart';
@@ -10,10 +12,10 @@ class NoticeRepoImpl implements NoticeRepo {
   NoticeRepoImpl(this._datasource);
 
   @override
-  Future<ServerResult<Notice>> createNotice(Notice notice) async {
+  Future<ServerResult<Notice>> createNotice(Notice notice, File? file) async {
     try {
       final model = NoticeModel.fromEntity(notice);
-      final data = await _datasource.createNotice(model);
+      final data = await _datasource.createNotice(model, file);
       return ServerSuccess(data);
     } catch (e) {
       return ServerFailure(

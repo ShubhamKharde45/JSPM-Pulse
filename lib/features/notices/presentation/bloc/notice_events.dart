@@ -1,11 +1,14 @@
+import 'dart:io';
+
 import 'package:jspm_pulse/features/notices/domain/entitis/notice_entity.dart';
 
 abstract class NoticeEvents {}
 
 class CreateNoticeEvent extends NoticeEvents {
   final Notice notice;
+  final File? file;
 
-  CreateNoticeEvent(this.notice);
+  CreateNoticeEvent(this.notice, this.file);
 }
 
 class UpdateNoticeEvent extends NoticeEvents {}

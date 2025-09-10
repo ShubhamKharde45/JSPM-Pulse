@@ -22,7 +22,7 @@ class NoticeBloc extends Bloc<NoticeEvents, NoticeStates> {
   ) async {
     emit(NoticeLoadingState());
     try {
-      await noticeUsecases.createNoticeUseCase(event.notice);
+      await noticeUsecases.createNoticeUseCase(event.notice, event.file);
       emit(NoticeCreatedState());
     } catch (e) {
       emit(NoticeFailureState(e.toString()));

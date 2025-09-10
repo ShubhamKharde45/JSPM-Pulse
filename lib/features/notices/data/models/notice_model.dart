@@ -1,16 +1,19 @@
 import 'package:jspm_pulse/features/notices/domain/entitis/notice_entity.dart';
 
 class NoticeModel extends Notice {
-  const NoticeModel({
+  @override
+  String? attachments;
+
+  NoticeModel({
     super.id,
     super.createdAt,
     required super.title,
     required super.description,
-    super.attachments,
+    this.attachments,
     super.category,
     super.userId,
     required super.visibleTo,
-  });
+  }) : super(attachments: attachments);
 
   factory NoticeModel.fromMap(Map<String, dynamic> map) {
     return NoticeModel(
@@ -27,7 +30,6 @@ class NoticeModel extends Notice {
     );
   }
 
-  // Model -> Supabase row (insert/update)
   Map<String, dynamic> toMap() {
     final map = <String, dynamic>{
       'title': title,
@@ -38,14 +40,12 @@ class NoticeModel extends Notice {
       'visible_to': visibleTo,
     };
 
-    // Only include if not null (DB will auto-fill otherwise)
     if (id != null) map['id'] = id;
     if (createdAt != null) map['created_at'] = createdAt!.toIso8601String();
 
     return map;
   }
 
-  // Entity -> Model
   factory NoticeModel.fromEntity(Notice entity) {
     return NoticeModel(
       id: entity.id,
@@ -57,5 +57,10 @@ class NoticeModel extends Notice {
       userId: entity.userId,
       visibleTo: entity.visibleTo,
     );
+  }
+
+  /// ✅ Allows updating attachments after creation
+  void updateAttachments(String? newAttachments) {
+    attachments = newAttachments;
   }
 }
