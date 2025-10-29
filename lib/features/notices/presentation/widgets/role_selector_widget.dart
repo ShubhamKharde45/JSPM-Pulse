@@ -16,9 +16,9 @@ class _RoleSelectorState extends State<RoleSelector> {
 
   void _notifyParent() {
     final selected = <String>[];
-    if (student) selected.add("Students");
+    if (student) selected.add("Student");
     if (faculty) selected.add("Faculty");
-    if (member) selected.add("Members");
+    if (member) selected.add("Member");
     widget.onChanged(selected);
   }
 
