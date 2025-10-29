@@ -1,8 +1,10 @@
 import 'package:get_it/get_it.dart';
 import 'package:jspm_pulse/features/auth/data/DataSource/supabase_auth_datasource.dart';
 import 'package:jspm_pulse/features/auth/data/Repositories/auth_repository_impl.dart';
+import 'package:jspm_pulse/features/auth/domain/UseCases/add_role_db_usecase.dart';
 import 'package:jspm_pulse/features/auth/domain/UseCases/auth_usecases.dart';
 import 'package:jspm_pulse/features/auth/domain/UseCases/get_current_user_usecase.dart';
+import 'package:jspm_pulse/features/auth/domain/UseCases/get_user_role_usecase.dart';
 import 'package:jspm_pulse/features/auth/domain/UseCases/log_in_usecase.dart';
 import 'package:jspm_pulse/features/auth/domain/UseCases/sign_out_usecase.dart';
 import 'package:jspm_pulse/features/auth/domain/UseCases/sign_up_usecase.dart';
@@ -18,7 +20,6 @@ import 'package:jspm_pulse/features/notices/domain/usecases/update_notice_usecas
 import 'package:jspm_pulse/features/notices/presentation/bloc/notice_bloc.dart';
 import 'package:jspm_pulse/features/profile/data/datasource/profile_datasaurce.dart';
 import 'package:jspm_pulse/features/profile/data/repositories/profile_repo_impl.dart';
-import 'package:jspm_pulse/features/profile/domain/repositories/profile_repo.dart';
 import 'package:jspm_pulse/features/profile/domain/usecases/get_profile_usecase.dart';
 import 'package:jspm_pulse/features/profile/domain/usecases/update_profile_pic_usecase.dart';
 import 'package:jspm_pulse/features/profile/domain/usecases/update_profile_usecase.dart';
@@ -45,6 +46,12 @@ void setupLocator() {
       logIn: LogInUseCase(authRepository: getIt<AuthRepositoryImpl>()),
       signOut: SignOutUseCase(authRepository: getIt<AuthRepositoryImpl>()),
       getCurrentUser: GetCurrentUserUseCase(
+        authRepository: getIt<AuthRepositoryImpl>(),
+      ),
+      addRoleToDbUseCase: AddRoleToDbUseCase(
+        authRepository: getIt<AuthRepositoryImpl>(),
+      ),
+      getUserRoleUsecase: GetUserRoleUsecase(
         authRepository: getIt<AuthRepositoryImpl>(),
       ),
     ),

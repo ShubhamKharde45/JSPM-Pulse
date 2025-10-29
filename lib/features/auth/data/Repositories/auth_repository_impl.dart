@@ -2,6 +2,7 @@ import 'package:jspm_pulse/features/auth/data/DataSource/supabase_auth_datasourc
 import 'package:jspm_pulse/features/auth/data/Models/user_model.dart';
 import 'package:jspm_pulse/features/auth/domain/Entities/user_entity.dart';
 import 'package:jspm_pulse/features/auth/domain/Repositories/auth_repo.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 class AuthRepositoryImpl extends AuthRepository {
   final SupabaseAuthDatasource datasource;
@@ -40,4 +41,17 @@ class AuthRepositoryImpl extends AuthRepository {
     }
     return null;
   }
+
+  
+  @override
+  Future<String?> getCurrentUserRole() async{
+    return await datasource.getCurrentUserRole();
+  }
+  
+ 
+@override
+Future<void> addRoleToDB(String role, String userId) async {
+  await datasource.addRoleToDB(role, userId);
+}
+
 }

@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:jspm_pulse/core/service_locators/service_locator.dart';
 import 'package:jspm_pulse/features/auth/domain/UseCases/auth_usecases.dart';
-import 'package:jspm_pulse/features/auth/domain/UseCases/get_current_user_usecase.dart';
 import 'package:jspm_pulse/features/auth/presentation/Bloc/auth_bloc.dart';
 import 'package:jspm_pulse/features/auth/presentation/Bloc/auth_events.dart';
 import 'package:jspm_pulse/features/auth/presentation/Bloc/auth_state.dart';
@@ -16,7 +15,6 @@ import 'package:jspm_pulse/features/profile/domain/usecases/update_profile_pic_u
 import 'package:jspm_pulse/features/profile/domain/usecases/update_profile_usecase.dart';
 import 'package:jspm_pulse/features/profile/presentation/bloc/profile_bloc.dart';
 import 'package:jspm_pulse/features/profile/presentation/bloc/profile_events.dart';
-import 'package:jspm_pulse/features/profile/presentation/pages/profile_screen.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 void main() async {
@@ -28,7 +26,7 @@ void main() async {
   );
 
   setupLocator();
-  runApp(JSPMPulse());
+  runApp(const JSPMPulse());
 }
 
 class JSPMPulse extends StatelessWidget {
@@ -36,24 +34,29 @@ class JSPMPulse extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final currentUser = getIt<SupabaseClient>().auth.currentUser;
+
     return MultiBlocProvider(
       providers: [
         BlocProvider(
           create: (_) =>
               AuthBloc(getIt<AuthUseCases>())..add(LoadCurrentUserEvent()),
         ),
-        BlocProvider(
-          create: (_) =>
-              NoticeBloc(getIt<NoticeUsecases>())
-                ..add(FetchAllNoticesStreamEvent(["Students"])),
-        ),
+       BlocProvider(
+  create: (_) => NoticeBloc(getIt<NoticeUsecases>()),
+),
 
         BlocProvider(
-          create: (_) => ProfileBloc(
-            getIt<GetProfileUseCase>(),
-            getIt<UpdateProfileUseCase>(),
-            getIt<UpdateProfilePicUseCase>(),
-          )..add(FetchProfileEvent(id: "d15839af-f50d-4e5d-a8c4-ef6c707348bc")),
+          create: (_) {
+            final bloc = ProfileBloc(
+              getIt<GetProfileUseCase>(),
+              getIt<UpdateProfileUseCase>(),
+              getIt<UpdateProfilePicUseCase>(),
+            );
+
+            bloc.add(FetchProfileEvent(id: currentUser!.id));
+            return bloc;
+          },
         ),
       ],
       child: MaterialApp(
@@ -61,7 +64,9 @@ class JSPMPulse extends StatelessWidget {
         home: BlocBuilder<AuthBloc, AuthStates>(
           builder: (context, state) {
             if (state is AuthLoading) {
-              return Scaffold(body: Center(child: CircularProgressIndicator()));
+              return const Scaffold(
+                body: Center(child: CircularProgressIndicator()),
+              );
             }
             if (state is AuthSuccess) {
               return const HomeScreen();

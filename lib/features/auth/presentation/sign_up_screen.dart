@@ -8,6 +8,7 @@ import 'package:jspm_pulse/features/auth/presentation/Bloc/auth_bloc.dart';
 import 'package:jspm_pulse/features/auth/presentation/Bloc/auth_events.dart';
 import 'package:jspm_pulse/features/auth/presentation/Bloc/auth_state.dart';
 import 'package:jspm_pulse/features/auth/presentation/login_screen.dart';
+import 'package:jspm_pulse/features/auth/presentation/widgets/drop_down_role.dart';
 
 class SignUpScreen extends StatefulWidget {
   const SignUpScreen({super.key});
@@ -19,6 +20,8 @@ class SignUpScreen extends StatefulWidget {
 class _SignUpScreenState extends State<SignUpScreen> {
   final TextEditingController emailController = TextEditingController();
   final TextEditingController passController = TextEditingController();
+
+  String selectedRole = "Student";
   bool isLoading = false;
   @override
   Widget build(BuildContext context) {
@@ -28,13 +31,27 @@ class _SignUpScreenState extends State<SignUpScreen> {
         child: BlocConsumer<AuthBloc, AuthStates>(
           listener: (context, state) {
             if (state is AuthSuccess) {
-              print("SUCESS");
-            } else if (state is AuthFailure) {
-              ScaffoldMessenger.of(
+              final userId = state.user!.id;
+              context.read<AuthBloc>().add(
+                AddRoleDbEvent(selectedRole, userId),
+              );
+            } else if (state is RoleToDBSuccess) {
+              Navigator.pushReplacement(
                 context,
-              ).showSnackBar(SnackBar(content: Text(state.error)));
+                MaterialPageRoute(builder: (context) => LogInScreen()),
+              );
+            } else if (state is RoleToDBFailure) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(content: Text("Failed to add your role")),
+              );
             }
+            // else if (state is AuthFailure) {
+            //   ScaffoldMessenger.of(
+            //     context,
+            //   ).showSnackBar(SnackBar(content: Text(state.error)));
+            // }
           },
+
           builder: (context, state) {
             if (state is AuthLoading) {
               return const Center(child: CircularProgressIndicator());
@@ -88,6 +105,13 @@ class _SignUpScreenState extends State<SignUpScreen> {
                         icon: Icons.lock,
                         obscureText: true,
                         controller: passController,
+                      ),
+
+                      const SizedBox(height: 30),
+                      RoleDropdown(
+                        onRoleSelected: (role) => setState(() {
+                          selectedRole = role;
+                        }),
                       ),
                       const SizedBox(height: 30),
                       AppBtn(

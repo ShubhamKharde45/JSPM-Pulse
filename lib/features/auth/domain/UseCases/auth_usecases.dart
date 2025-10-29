@@ -1,4 +1,6 @@
+import 'package:jspm_pulse/features/auth/domain/UseCases/add_role_db_usecase.dart';
 import 'package:jspm_pulse/features/auth/domain/UseCases/get_current_user_usecase.dart';
+import 'package:jspm_pulse/features/auth/domain/UseCases/get_user_role_usecase.dart';
 import 'package:jspm_pulse/features/auth/domain/UseCases/log_in_usecase.dart';
 import 'package:jspm_pulse/features/auth/domain/UseCases/sign_out_usecase.dart';
 import 'package:jspm_pulse/features/auth/domain/UseCases/sign_up_usecase.dart';
@@ -8,11 +10,15 @@ class AuthUseCases {
   final LogInUseCase logIn;
   final SignOutUseCase signOut;
   final GetCurrentUserUseCase getCurrentUser;
+  final AddRoleToDbUseCase addRoleToDbUseCase;
+  final GetUserRoleUsecase getUserRoleUsecase;
 
   AuthUseCases({
     required this.signUp,
     required this.logIn,
     required this.signOut,
     required this.getCurrentUser,
+    required this.addRoleToDbUseCase,
+    required this.getUserRoleUsecase,
   });
 }

@@ -51,22 +51,20 @@ class NoticeBloc extends Bloc<NoticeEvents, NoticeStates> {
     }
   }
 
-  Future<void> _fetchAllNoticesStream(
-    FetchAllNoticesStreamEvent event,
-    Emitter<NoticeStates> emit,
-  ) async {
-    emit(NoticeLoadingState());
-    try {
-      _noticesStream = noticeUsecases.fetchAllNoticesStreamUseCase(
-        event.roles.first,
-      );
-      await emit.forEach<List<Notice>>(
-        _noticesStream!,
-        onData: (notices) => NoticeLoadedState(notices),
-        onError: (_, __) => NoticeFailureState("Failed to load notices"),
-      );
-    } catch (e) {
-      emit(NoticeFailureState(e.toString()));
-    }
+Future<void> _fetchAllNoticesStream(
+  FetchAllNoticesStreamEvent event,
+  Emitter<NoticeStates> emit,
+) async {
+  emit(NoticeLoadingState());
+  try {
+    _noticesStream = noticeUsecases.fetchAllNoticesStreamUseCase(event.roles);
+    await emit.forEach<List<Notice>>(
+      _noticesStream!,
+      onData: (notices) => NoticeLoadedState(notices),
+    );
+  } catch (e) {
+    emit(NoticeFailureState("Failed to load notices: $e"));
   }
+}
+
 }

@@ -59,7 +59,6 @@ class NoticeModel extends Notice {
     );
   }
 
-  /// ✅ Allows updating attachments after creation
   void updateAttachments(String? newAttachments) {
     attachments = newAttachments;
   }

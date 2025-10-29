@@ -17,3 +17,12 @@ class LogInEvent extends AuthEvent {
 }
 
 class SignOutEvent extends AuthEvent {}
+
+class AddRoleDbEvent extends AuthEvent {
+  final String role;
+  final String userId;
+  AddRoleDbEvent(this.role, this.userId);
+}
+
+
+class GetCurrentUserRoleEvent extends AuthEvent {}

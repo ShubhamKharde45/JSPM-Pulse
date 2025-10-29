@@ -8,6 +8,7 @@ import 'package:jspm_pulse/features/auth/presentation/Bloc/auth_bloc.dart';
 import 'package:jspm_pulse/features/auth/presentation/Bloc/auth_events.dart';
 import 'package:jspm_pulse/features/auth/presentation/Bloc/auth_state.dart';
 import 'package:jspm_pulse/features/auth/presentation/sign_up_screen.dart';
+import 'package:jspm_pulse/features/home/presentation/pages/home_screen.dart';
 
 class LogInScreen extends StatefulWidget {
   const LogInScreen({super.key});
@@ -20,6 +21,7 @@ class _LogInScreenState extends State<LogInScreen> {
   final TextEditingController emailController = TextEditingController();
   final TextEditingController passController = TextEditingController();
   bool isLoading = false;
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -28,54 +30,55 @@ class _LogInScreenState extends State<LogInScreen> {
         child: BlocConsumer<AuthBloc, AuthStates>(
           listener: (context, state) {
             if (state is AuthSuccess) {
-              print("SUCESS");
-            } else if (state is AuthFailure) {
-              ScaffoldMessenger.of(
+              Navigator.pushAndRemoveUntil(
                 context,
-              ).showSnackBar(SnackBar(content: Text(state.error)));
+                MaterialPageRoute(builder: (context) => const HomeScreen()),
+                (route) => false,
+              );
+            } else if (state is AuthFailure) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(content: Text(state.error)),
+              );
             }
           },
           builder: (context, state) {
-            if (state is AuthLoading) {
-              return const Center(child: CircularProgressIndicator());
-            }
-            return Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 30),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    crossAxisAlignment: CrossAxisAlignment.center,
+            final isLoading = state is AuthLoading;
+
+            return Stack(
+              children: [
+                Padding(
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 10, vertical: 30),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Icon(CupertinoIcons.shield_fill, size: 45),
-                      Text(
-                        "JSPM Pulse",
-                        style: TextStyle(
-                          color: Colors.black,
-                          fontSize: 35,
-                          fontWeight: FontWeight.bold,
+                      Row(
+                        children: [
+                          const Icon(CupertinoIcons.shield_fill, size: 45),
+                          const SizedBox(width: 5),
+                          const Text(
+                            "JSPM Pulse",
+                            style: TextStyle(
+                              color: Colors.black,
+                              fontSize: 35,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 10),
+                      const Padding(
+                        padding: EdgeInsets.all(8.0),
+                        child: Text(
+                          "LogIn",
+                          style: TextStyle(
+                            color: Colors.black,
+                            fontSize: 45,
+                            fontWeight: FontWeight.bold,
+                          ),
                         ),
                       ),
-                    ],
-                  ),
-                  const SizedBox(height: 10),
-
-                  Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Text(
-                      "LogIn",
-                      style: TextStyle(
-                        color: Colors.black,
-                        fontSize: 45,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                  ),
-                  const SizedBox(height: 60),
-                  Column(
-                    mainAxisAlignment: MainAxisAlignment.end,
-                    children: [
+                      const SizedBox(height: 60),
                       AppInputField(
                         hint: "Email",
                         icon: Icons.email,
@@ -93,17 +96,19 @@ class _LogInScreenState extends State<LogInScreen> {
                       AppBtn(
                         height: 70,
                         width: MediaQuery.of(context).size.width * 0.9,
-                        onTap: () {
-                          context.read<AuthBloc>().add(
-                            LogInEvent(
-                              emailController.text,
-                              passController.text,
-                            ),
-                          );
-                        },
-                        child: const Text(
-                          "Log In",
-                          style: TextStyle(
+                        onTap: isLoading
+                            ? null
+                            : () {
+                                context.read<AuthBloc>().add(
+                                      LogInEvent(
+                                        emailController.text,
+                                        passController.text,
+                                      ),
+                                    );
+                              },
+                        child: Text(
+                          isLoading ? "Logging In..." : "Log In",
+                          style: const TextStyle(
                             fontSize: 20,
                             fontWeight: FontWeight.bold,
                           ),
@@ -125,12 +130,10 @@ class _LogInScreenState extends State<LogInScreen> {
                               Navigator.push(
                                 context,
                                 MaterialPageRoute(
-                                  builder: (context) => SignUpScreen(),
+                                  builder: (context) => const SignUpScreen(),
                                 ),
                               );
                             },
-                            autofocus: true,
-                            focusColor: Colors.grey,
                             child: const Text(
                               "Create here.",
                               style: TextStyle(
@@ -143,8 +146,15 @@ class _LogInScreenState extends State<LogInScreen> {
                       ),
                     ],
                   ),
-                ],
-              ),
+                ),
+                if (isLoading)
+                  Container(
+                    color: Colors.black26,
+                    child: const Center(
+                      child: CircularProgressIndicator(),
+                    ),
+                  ),
+              ],
             );
           },
         ),

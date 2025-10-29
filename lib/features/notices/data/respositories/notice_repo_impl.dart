@@ -66,11 +66,8 @@ class NoticeRepoImpl implements NoticeRepo {
   }
 
   @override
-  Stream<List<Notice>> fetchAllNoticesStream(String role) {
-    try {
-      return _datasource.fetchAllNoticesStream(role);
-    } catch (e) {
-      return Stream.empty(broadcast: false);
-    }
-  }
+Stream<List<Notice>> fetchAllNoticesStream(List<String> roles) {
+  return _datasource.fetchAllNoticesStream(roles);
+}
+
 }

@@ -7,6 +7,7 @@ abstract class NoticeRepo {
   Future<ServerResult<Notice>> createNotice(Notice notice, File? file);
   Future<ServerResult<void>> deleteNotice(String id);
   Future<ServerResult<Notice>> updateNotice(Notice notice);
-  Future<ServerResult<List<Notice>>> fetchAllNotices(String role);
-  Stream<List<Notice>> fetchAllNoticesStream(String role);
+  Future<ServerResult<List<Notice>>> fetchAllNotices(String role);Stream<List<Notice>> fetchAllNoticesStream(List<String> roles);
+
+
 }

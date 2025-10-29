@@ -129,7 +129,7 @@ class _CreateNoticeScreenState extends State<CreateNoticeScreen> {
             ),
             SizedBox(height: 20),
             Text(
-              "Select accessibility : ",
+              "Select visibility : ",
               style: TextStyle(
                 color: Colors.grey.shade500,
                 fontSize: 20,
@@ -143,7 +143,7 @@ class _CreateNoticeScreenState extends State<CreateNoticeScreen> {
             ),
             SizedBox(height: 30),
             FilePickerBox(
-              onFilePicked: (file) {
+              onFilePicked: (file) async {
                 if (file != null) {
                   setState(() {
                     selectedFile = file;

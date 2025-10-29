@@ -1,15 +1,21 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:jspm_pulse/core/service_locators/service_locator.dart';
 import 'package:jspm_pulse/core/widgets/app_btn.dart';
 import 'package:jspm_pulse/features/profile/presentation/bloc/profile_bloc.dart';
+import 'package:jspm_pulse/features/profile/presentation/bloc/profile_events.dart';
 import 'package:jspm_pulse/features/profile/presentation/bloc/profile_state.dart';
 import 'package:jspm_pulse/features/profile/presentation/widgets/profile_info_container.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 class ProfileScreen extends StatelessWidget {
   const ProfileScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
+    getIt<ProfileBloc>().add(
+      FetchProfileEvent(id: getIt<SupabaseClient>().auth.currentUser!.id),
+    );
     return Scaffold(
       appBar: AppBar(
         title: Text("Profile"),

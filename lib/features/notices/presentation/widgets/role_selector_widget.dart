@@ -11,13 +11,13 @@ class RoleSelector extends StatefulWidget {
 
 class _RoleSelectorState extends State<RoleSelector> {
   bool student = false;
-  bool teacher = false;
+  bool faculty = false;
   bool member = false;
 
   void _notifyParent() {
     final selected = <String>[];
     if (student) selected.add("Students");
-    if (teacher) selected.add("Teachers");
+    if (faculty) selected.add("Faculty");
     if (member) selected.add("Members");
     widget.onChanged(selected);
   }
@@ -35,10 +35,10 @@ class _RoleSelectorState extends State<RoleSelector> {
           },
         ),
         CheckboxListTile(
-          title: const Text("Teacher"),
-          value: teacher,
+          title: const Text("Faculty"),
+          value: faculty,
           onChanged: (val) {
-            setState(() => teacher = val ?? false);
+            setState(() => faculty = val ?? false);
             _notifyParent();
           },
         ),

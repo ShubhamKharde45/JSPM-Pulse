@@ -5,4 +5,7 @@ abstract class AuthRepository {
   Future<UserEntity?> signUp(String email, String pwd);
   Future<UserEntity?> logIn(String email, String pwd);
   Future<void> signOut();
+  Future<void> addRoleToDB(String role, String userId);
+  Future<String?> getCurrentUserRole();
+
 }
