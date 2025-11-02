@@ -11,105 +11,104 @@ class ViewNoticeScreen extends StatelessWidget {
       appBar: AppBar(
         elevation: 0,
         backgroundColor: Colors.transparent,
-        title: Text("Notice"),
-        titleTextStyle: TextStyle(
+        title: const Text("Notice"),
+        titleTextStyle: const TextStyle(
           color: Colors.black,
           fontSize: 30,
           fontWeight: FontWeight.bold,
         ),
-        actionsPadding: EdgeInsets.only(right: 10),
+        actionsPadding: const EdgeInsets.only(right: 10),
       ),
-
-      body: Center(
+      body: SingleChildScrollView(
+        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
         child: Container(
-          width: MediaQuery.of(context).size.width,
-          padding: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+          width: double.infinity,
           decoration: BoxDecoration(
             border: Border.all(color: Colors.grey.shade200),
             borderRadius: BorderRadius.circular(10),
           ),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.start,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Container(
-                height: 40,
-                padding: EdgeInsets.symmetric(horizontal: 10),
-                decoration: BoxDecoration(
-                  color: Colors.deepPurpleAccent.shade100,
-                  borderRadius: BorderRadius.circular(10),
+          child: Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // Category Tag
+                Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+                  decoration: BoxDecoration(
+                    color: Colors.deepPurpleAccent.shade100,
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  child: Text(
+                    notice.category ?? "Others",
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontSize: 18,
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
                 ),
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  crossAxisAlignment: CrossAxisAlignment.center,
+                const SizedBox(height: 20),
+
+                // Title
+                Text(
+                  notice.title,
+                  style: const TextStyle(
+                    color: Colors.black,
+                    fontSize: 22,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+                const SizedBox(height: 15),
+
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
+                    Expanded(
+                      child: Text(
+                        notice.description,
+                        style: TextStyle(
+                          color: Colors.grey.shade700,
+                          fontSize: 18,
+                          fontWeight: FontWeight.w400,
+                        ),
+                      ),
+                    ),
+                    const SizedBox(width: 10),
+                    // Timestamp
                     Text(
-                      notice.category ?? "Others",
+                      "${notice.createdAt?.hour ?? 0}h ago",
                       style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 18,
-                        fontWeight: FontWeight.w700,
+                        color: Colors.grey.shade500,
+                        fontSize: 16,
+                        fontWeight: FontWeight.w500,
                       ),
                     ),
                   ],
                 ),
-              ),
-              Padding(
-                padding: const EdgeInsets.symmetric(vertical: 20),
-                child: Text(
-                  notice.title,
-                  style: TextStyle(
-                    color: Colors.black,
-                    fontSize: 20,
-                    fontWeight: FontWeight.w500,
-                  ),
-                ),
-              ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Expanded(
-                    child: Text(
-                      notice.description,
-                      style: TextStyle(
-                        color: Colors.grey.shade500,
-                        fontSize: 18,
-                        fontWeight: FontWeight.w500,
-                      ),
-                    ),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.only(top: 10),
-                    child: Text(
-                      "${notice.createdAt!.hour.toString()}h ago",
-                      style: TextStyle(
-                        color: Colors.grey.shade500,
-                        fontSize: 18,
-                        fontWeight: FontWeight.w500,
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-              SizedBox(height: 45),
-              notice.attachments != null
-                  ? Container(
-                      height: 200,
-                      width: MediaQuery.of(context).size.width,
-                      padding: EdgeInsets.symmetric(horizontal: 25),
 
-                      child: Center(child: Icon(Icons.image, size: 70)),
-                    )
-                  : Text(
-                      "[No attachments]",
-                      style: TextStyle(
-                        color: Colors.grey.shade500,
-                        fontSize: 20,
-                        fontWeight: FontWeight.bold,
+                const SizedBox(height: 40),
+                notice.attachments != null
+                    ? Container(
+                        height: 200,
+                        width: double.infinity,
+                        padding: const EdgeInsets.symmetric(horizontal: 25),
+                        decoration: BoxDecoration(
+                          color: Colors.grey.shade100,
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                        child: const Center(child: Icon(Icons.image, size: 70)),
+                      )
+                    : Text(
+                        "[No attachments]",
+                        style: TextStyle(
+                          color: Colors.grey.shade500,
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                        ),
                       ),
-                    ),
-            ],
+              ],
+            ),
           ),
         ),
       ),

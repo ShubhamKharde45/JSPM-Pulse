@@ -10,20 +10,23 @@ class ProfileDatasaurce {
 
   ProfileDatasaurce(this._client);
 
-  Future<ServerResult> updateProfile(Profile profile) async {
+  Future<ServerResult<void>> updateProfile(Profile profile) async {
     try {
-      final response = await _client
-          .from("users")
-          .update(profile.toMap())
-          .eq('id', profile.id)
-          .select()
-          .single();
-      if (response != null) {
-        return ServerSuccess(response);
-      }
-      return ServerFailure(message: "Error while updating profile");
-    } catch (e) {
-      return ServerFailure(message: "Error : ${e.toString()}");
+      final updateData = {
+        'name': profile.name ?? '',
+        'department': profile.department ?? '',
+        'year': profile.year ?? 0,
+        'role': profile.role,
+        'profile_pic': profile.profilePic ?? 'dummy/profile.png',
+      };
+
+      await _client.from('users').update(updateData).eq('id', profile.id);
+
+      return ServerSuccess(null);
+    } catch (e, st) {
+      print('❌ UpdateProfile Error: $e');
+      print('STACKTRACE:\n$st');
+      return ServerFailure(message: 'Error updating profile: ${e.toString()}');
     }
   }
 
@@ -60,20 +63,47 @@ class ProfileDatasaurce {
       return ServerFailure(message: "Error : ${e.toString()}");
     }
   }
+Future<ServerResult<Profile>> getProfile(String id) async {
+  try {
+    final response = await _client
+        .from("users")
+        .select()
+        .eq('id', id)
+        .maybeSingle();
 
-  Future<ServerResult<Profile>> getProfile(String id) async {
-    try {
-      final response = await _client.from("users").select().eq('id', id);
-      Map<String, dynamic> dt = response.elementAt(0);
-      final data = Profile.fromMap(dt);
-      final signedUrl = await _client.storage
-          .from("attachments")
-          .createSignedUrl(data.profilePic ?? "dummy/profile.png", 60);
-
-      data.profilePic = signedUrl;
-      return ServerSuccess(data); // data is profile here
-    } catch (e) {
-      return ServerFailure(message: "Error : ${e.toString()}");
+    if (response == null) {
+      return ServerFailure(message: "User not found");
     }
+
+    final data = Profile.fromMap(response);
+
+    final imagePath = (data.profilePic?.isNotEmpty ?? false)
+        ? data.profilePic!
+        : "dummy/profile.png";
+
+    String finalImageUrl;
+
+    if (imagePath.startsWith("http")) {
+      finalImageUrl = imagePath;
+    } 
+    else {
+      try {
+        final signedUrl = await _client.storage
+            .from("attachments")
+            .createSignedUrl(imagePath, 60);
+        finalImageUrl = signedUrl;
+      } catch (e) {
+        finalImageUrl =
+            "https://cgokpagcgcbgswmbphrr.supabase.co/storage/v1/object/sign/attachments/dummy/profile.png?token=eyJraWQiOiJzdG9yYWdlLXVybC1zaWduaW5nLWtleV8yNjg5MGM4NC0wZTk1LTRkMmQtOGYyYy01OGU5MmJmNWZmNDYiLCJhbGciOiJIUzI1NiJ9.eyJ1cmwiOiJhdHRhY2htZW50cy9kdW1teS9wcm9maWxlLnBuZyIsImlhdCI6MTc2MjA5MDQ2MiwiZXhwIjoxNzkzNjI2NDYyfQ.SZKQY61jt3DnEwprIqVL4jxXkCg63B1jJb-5n5UmTWk";
+        print("⚠️ Could not sign image URL: $e");
+      }
+    }
+
+    data.profilePic = finalImageUrl;
+    return ServerSuccess(data);
+  } catch (e, st) {
+    return ServerFailure(message: "Error: ${e.toString()}");
   }
+}
+
 }

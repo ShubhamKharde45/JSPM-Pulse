@@ -36,7 +36,7 @@ class ProfileRepoImpl implements ProfileRepository {
     if (result is ServerSuccess) {
       return ServerSuccess(result.data);
     } else {
-      return ServerFailure(message: "Error while gettimg profile.");
+      return ServerFailure(message: "Error while getting profile.");
     }
   }
 }

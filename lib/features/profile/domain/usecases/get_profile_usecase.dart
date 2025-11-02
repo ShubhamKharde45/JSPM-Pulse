@@ -9,6 +9,7 @@ class GetProfileUseCase {
   Future<ServerResult<dynamic>> call(String id) async {
     final response = await _profileRepository.getProfile(id);
 
+
     return response;
   }
 }

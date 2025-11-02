@@ -36,9 +36,9 @@ class _LogInScreenState extends State<LogInScreen> {
                 (route) => false,
               );
             } else if (state is AuthFailure) {
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(content: Text(state.error)),
-              );
+              ScaffoldMessenger.of(
+                context,
+              ).showSnackBar(SnackBar(content: Text("Failed to log you in")));
             }
           },
           builder: (context, state) {
@@ -46,113 +46,116 @@ class _LogInScreenState extends State<LogInScreen> {
 
             return Stack(
               children: [
-                Padding(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 10, vertical: 30),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Row(
-                        children: [
-                          const Icon(CupertinoIcons.shield_fill, size: 45),
-                          const SizedBox(width: 5),
-                          const Text(
-                            "JSPM Pulse",
+                Center(
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 10,
+                      vertical: 30,
+                    ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            const Icon(CupertinoIcons.shield, size: 40),
+                            const SizedBox(width: 5),
+                            const Text(
+                              "JSPM Pulse",
+                              style: TextStyle(
+                                color: Colors.black,
+                                fontSize: 35,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 10),
+                        const Padding(
+                          padding: EdgeInsets.all(8.0),
+                          child: Text(
+                            "LogIn",
                             style: TextStyle(
                               color: Colors.black,
-                              fontSize: 35,
+                              fontSize: 40,
                               fontWeight: FontWeight.bold,
                             ),
                           ),
-                        ],
-                      ),
-                      const SizedBox(height: 10),
-                      const Padding(
-                        padding: EdgeInsets.all(8.0),
-                        child: Text(
-                          "LogIn",
-                          style: TextStyle(
-                            color: Colors.black,
-                            fontSize: 45,
-                            fontWeight: FontWeight.bold,
-                          ),
                         ),
-                      ),
-                      const SizedBox(height: 60),
-                      AppInputField(
-                        hint: "Email",
-                        icon: Icons.email,
-                        obscureText: false,
-                        controller: emailController,
-                      ),
-                      const SizedBox(height: 30),
-                      AppInputField(
-                        hint: "Password",
-                        icon: Icons.lock,
-                        obscureText: true,
-                        controller: passController,
-                      ),
-                      const SizedBox(height: 30),
-                      AppBtn(
-                        height: 70,
-                        width: MediaQuery.of(context).size.width * 0.9,
-                        onTap: isLoading
-                            ? null
-                            : () {
-                                context.read<AuthBloc>().add(
-                                      LogInEvent(
-                                        emailController.text,
-                                        passController.text,
-                                      ),
-                                    );
-                              },
-                        child: Text(
-                          isLoading ? "Logging In..." : "Log In",
-                          style: const TextStyle(
-                            fontSize: 20,
-                            fontWeight: FontWeight.bold,
-                          ),
+                        const SizedBox(height: 60),
+                        AppInputField(
+                          hint: "Email",
+                          icon: Icons.email,
+                          obscureText: false,
+                          controller: emailController,
                         ),
-                      ),
-                      const SizedBox(height: 30),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Text(
-                            "Don't have an account? ",
-                            style: TextStyle(
-                              color: Colors.grey.shade900,
-                              fontSize: 15,
+                        const SizedBox(height: 30),
+                        AppInputField(
+                          hint: "Password",
+                          icon: Icons.lock,
+                          obscureText: true,
+                          controller: passController,
+                        ),
+                        const SizedBox(height: 30),
+                        AppBtn(
+                          height: 70,
+                          width: MediaQuery.of(context).size.width * 0.9,
+                          onTap: isLoading
+                              ? null
+                              : () {
+                                  context.read<AuthBloc>().add(
+                                    LogInEvent(
+                                      emailController.text,
+                                      passController.text,
+                                    ),
+                                  );
+                                },
+                          child: Text(
+                            isLoading ? "Logging In..." : "Log In",
+                            style: const TextStyle(
+                              fontSize: 20,
+                              fontWeight: FontWeight.bold,
                             ),
                           ),
-                          InkWell(
-                            onTap: () {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) => const SignUpScreen(),
-                                ),
-                              );
-                            },
-                            child: const Text(
-                              "Create here.",
+                        ),
+                        const SizedBox(height: 30),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Text(
+                              "Don't have an account? ",
                               style: TextStyle(
-                                color: primaryColor,
+                                color: Colors.grey.shade900,
                                 fontSize: 15,
                               ),
                             ),
-                          ),
-                        ],
-                      ),
-                    ],
+                            InkWell(
+                              onTap: () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => const SignUpScreen(),
+                                  ),
+                                );
+                              },
+                              child: const Text(
+                                "Create here.",
+                                style: TextStyle(
+                                  color: primaryColor,
+                                  fontSize: 15,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
                   ),
                 ),
                 if (isLoading)
                   Container(
                     color: Colors.black26,
-                    child: const Center(
-                      child: CircularProgressIndicator(),
-                    ),
+                    child: const Center(child: CircularProgressIndicator()),
                   ),
               ],
             );

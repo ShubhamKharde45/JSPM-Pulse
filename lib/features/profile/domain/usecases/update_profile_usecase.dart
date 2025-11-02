@@ -9,7 +9,6 @@ class UpdateProfileUseCase {
 
   Future<ServerResult<dynamic>> call(Profile profile) async {
     final response = await _profileRepository.updateProfile(profile);
-
     return response;
   }
 }

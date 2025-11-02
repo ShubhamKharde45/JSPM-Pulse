@@ -1,111 +1,234 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:jspm_pulse/core/errors/server_errors.dart';
 import 'package:jspm_pulse/core/service_locators/service_locator.dart';
 import 'package:jspm_pulse/core/widgets/app_btn.dart';
-import 'package:jspm_pulse/features/profile/presentation/bloc/profile_bloc.dart';
-import 'package:jspm_pulse/features/profile/presentation/bloc/profile_events.dart';
-import 'package:jspm_pulse/features/profile/presentation/bloc/profile_state.dart';
-import 'package:jspm_pulse/features/profile/presentation/widgets/profile_info_container.dart';
+import 'package:jspm_pulse/features/profile/data/models/profile_model.dart';
+import 'package:jspm_pulse/features/profile/domain/usecases/get_profile_usecase.dart';
+import 'package:jspm_pulse/features/profile/domain/usecases/update_profile_usecase.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
-class ProfileScreen extends StatelessWidget {
+class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    getIt<ProfileBloc>().add(
-      FetchProfileEvent(id: getIt<SupabaseClient>().auth.currentUser!.id),
+  State<ProfileScreen> createState() => _ProfileScreenState();
+}
+
+class _ProfileScreenState extends State<ProfileScreen> {
+  Profile? profile;
+  bool isLoading = true;
+  String? errorMessage;
+
+  Future<void> fetchProfileDirectly() async {
+    final getProfileUseCase = getIt<GetProfileUseCase>();
+    final supabase = getIt<SupabaseClient>();
+    final userId = supabase.auth.currentUser!.id;
+
+    final result = await getProfileUseCase.call(userId);
+
+    if (result is ServerSuccess<Profile>) {
+      setState(() {
+        profile = result.data;
+        isLoading = false;
+      });
+    } else if (result is ServerFailure) {
+      setState(() {
+        errorMessage = result.message;
+        isLoading = false;
+      });
+    }
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    fetchProfileDirectly();
+  }
+
+  Future<void> updateProfile(Profile updatedProfile) async {
+    final updateProfileUseCase = getIt<UpdateProfileUseCase>();
+
+    setState(() => isLoading = true);
+
+    final result = await updateProfileUseCase.call(updatedProfile);
+
+    if (result is ServerSuccess) {
+      setState(() {
+        profile = updatedProfile;
+        isLoading = false;
+      });
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text("✅ Profile updated successfully!")),
+      );
+    } else if (result is ServerFailure) {
+      setState(() => isLoading = false);
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text("❌ Failed: ${result.message}")),
+      );
+    }
+  }
+
+  void showEditDialog(Profile current) {
+    final nameCtrl = TextEditingController(text: current.name ?? '');
+    final deptCtrl = TextEditingController(text: current.department ?? '');
+    final yearCtrl = TextEditingController(
+      text: current.year?.toString() ?? '',
     );
+
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (ctx) => Padding(
+        padding: EdgeInsets.only(
+          bottom: MediaQuery.of(ctx).viewInsets.bottom,
+          left: 16,
+          right: 16,
+          top: 24,
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const Text(
+              "Edit Profile",
+              style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+            ),
+            const SizedBox(height: 16),
+            TextField(
+              controller: nameCtrl,
+              decoration: const InputDecoration(labelText: "Name"),
+            ),
+            const SizedBox(height: 8),
+            TextField(
+              controller: deptCtrl,
+              decoration: const InputDecoration(labelText: "Department"),
+            ),
+            const SizedBox(height: 8),
+            TextField(
+              controller: yearCtrl,
+              keyboardType: TextInputType.number,
+              decoration: const InputDecoration(labelText: "Year"),
+            ),
+            const SizedBox(height: 16),
+            AppBtn(
+              height: 40,
+              width: MediaQuery.of(context).size.width * 0.7,
+              onTap: () {
+                final updated = Profile(
+                  id: current.id,
+                  role: current.role,
+                  createdAt: current.createdAt,
+                  profilePic: current.profilePic,
+                  name: nameCtrl.text.isEmpty ? null : nameCtrl.text,
+                  department: deptCtrl.text.isEmpty ? null : deptCtrl.text,
+                  year: int.tryParse(yearCtrl.text),
+                );
+
+                Navigator.pop(ctx);
+                updateProfile(updated);
+              },
+              child: const Text("Save Changes"),
+            ),
+            const SizedBox(height: 30),
+          ],
+        ),
+      ),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    if (isLoading) {
+      return const Scaffold(body: Center(child: CircularProgressIndicator()));
+    }
+
+    if (errorMessage != null) {
+      return Scaffold(
+        body: Center(
+          child: Text(
+            "Error: $errorMessage",
+            style: const TextStyle(color: Colors.red, fontSize: 18),
+          ),
+        ),
+      );
+    }
+
+    final user = profile!;
+
     return Scaffold(
       appBar: AppBar(
-        title: Text("Profile"),
-        titleTextStyle: TextStyle(
-          color: Colors.black,
-          fontSize: 30,
-          fontWeight: FontWeight.bold,
-        ),
-        actionsPadding: EdgeInsets.only(right: 10),
+        title: const Text("Profile"),
         actions: [
-          AppBtn(
-            height: 45,
-            width: 100,
-            child: Text(
-              "Update",
-              style: TextStyle(
-                color: Colors.white,
-                fontSize: 20,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
+          IconButton(
+            icon: const Icon(Icons.refresh),
+            onPressed: fetchProfileDirectly,
           ),
         ],
       ),
-      body: BlocBuilder<ProfileBloc, ProfileState>(
-        builder: (context, state) {
-          if (state is ProfileLoadingState) {
-            return Center(child: CircularProgressIndicator());
-          }
+      body: SingleChildScrollView(
+        padding: const EdgeInsets.all(20),
+        child: Column(
+          children: [
+            CircleAvatar(
+              radius: 50,
+              backgroundImage: user.profilePic != null
+                  ? NetworkImage(user.profilePic!)
+                  : null,
+              child: user.profilePic == null
+                  ? const Icon(Icons.person, size: 60)
+                  : null,
+            ),
+            const SizedBox(height: 16),
 
-          if (state is ProfileFailureState) {
-            return Center(child: Text(state.error));
-          }
-          if (state is ProfileSuccessState) {
-            return SafeArea(
-              child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 10),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    // AVATAR AND USERNAME CONTAINER
-                    Container(
-                      height: 200,
-                      width: MediaQuery.of(context).size.width,
-                      padding: EdgeInsets.symmetric(horizontal: 10),
-                      decoration: BoxDecoration(),
-                      child: Column(
-                        children: [
-                          CircleAvatar(
-                            backgroundImage: NetworkImage(
-                              state.data.profilePic!,
-                            ),
-                            radius: 40,
-                          ),
-                          Text(
-                            state.data.name,
-                            style: TextStyle(
-                              color: Colors.grey.shade900,
-                              fontSize: 30,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
+            Text(
+              user.name ?? "No name provided",
+              style: const TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
+            ),
+            const SizedBox(height: 8),
+            Text(
+              "Role: ${user.role}",
+              style: const TextStyle(color: Colors.grey),
+            ),
+            const SizedBox(height: 20),
 
-                          Text(
-                            "shubham@gmail.com",
-                            style: TextStyle(
-                              color: Colors.grey.shade500,
-                              fontSize: 20,
-                              fontWeight: FontWeight.w600,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                    ProfileInfoContainer(
-                      text: "Department",
-                      desc: state.data.department,
-                    ),
-                    SizedBox(height: 20),
-                    ProfileInfoContainer(
-                      text: "Year",
-                      desc: state.data.year.toString(),
-                    ),
-                  ],
+            Card(
+              child: ListTile(
+                leading: const Icon(Icons.school),
+                title: const Text("Department"),
+                subtitle: Text(user.department ?? "Not specified"),
+              ),
+            ),
+            Card(
+              child: ListTile(
+                leading: const Icon(Icons.calendar_today),
+                title: const Text("Year"),
+                subtitle: Text(
+                  user.year != null ? "${user.year}" : "Not specified",
                 ),
               ),
-            );
-          }
-          return Text("Error");
-        },
+            ),
+            Card(
+              child: ListTile(
+                leading: const Icon(Icons.access_time),
+                title: const Text("Joined on"),
+                subtitle: Text(
+                  user.createdAt.toLocal().toString().split(' ')[0],
+                ),
+              ),
+            ),
+            const SizedBox(height: 20),
+
+            AppBtn(
+              height: 50,
+              width: MediaQuery.of(context).size.width * 0.7,
+              onTap: () => showEditDialog(user),
+              child: const Text("Edit Profile"),
+            ),
+            const SizedBox(height: 20),
+          ],
+        ),
       ),
     );
   }

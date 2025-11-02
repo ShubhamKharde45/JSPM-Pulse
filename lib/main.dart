@@ -9,7 +9,6 @@ import 'package:jspm_pulse/features/auth/presentation/login_screen.dart';
 import 'package:jspm_pulse/features/home/presentation/pages/home_screen.dart';
 import 'package:jspm_pulse/features/notices/domain/usecases/notice_usecases.dart';
 import 'package:jspm_pulse/features/notices/presentation/bloc/notice_bloc.dart';
-import 'package:jspm_pulse/features/notices/presentation/bloc/notice_events.dart';
 import 'package:jspm_pulse/features/profile/domain/usecases/get_profile_usecase.dart';
 import 'package:jspm_pulse/features/profile/domain/usecases/update_profile_pic_usecase.dart';
 import 'package:jspm_pulse/features/profile/domain/usecases/update_profile_usecase.dart';
@@ -42,9 +41,7 @@ class JSPMPulse extends StatelessWidget {
           create: (_) =>
               AuthBloc(getIt<AuthUseCases>())..add(LoadCurrentUserEvent()),
         ),
-       BlocProvider(
-  create: (_) => NoticeBloc(getIt<NoticeUsecases>()),
-),
+        BlocProvider(create: (_) => NoticeBloc(getIt<NoticeUsecases>())),
 
         BlocProvider(
           create: (_) {

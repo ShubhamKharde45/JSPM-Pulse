@@ -40,134 +40,131 @@ class _SignUpScreenState extends State<SignUpScreen> {
                 context,
                 MaterialPageRoute(builder: (context) => LogInScreen()),
               );
-            } else if (state is RoleToDBFailure) {
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text("Failed to add your role")),
-              );
-            }
-            // else if (state is AuthFailure) {
-            //   ScaffoldMessenger.of(
-            //     context,
-            //   ).showSnackBar(SnackBar(content: Text(state.error)));
-            // }
+            } 
           },
 
           builder: (context, state) {
             if (state is AuthLoading) {
               return const Center(child: CircularProgressIndicator());
             }
-            return Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 30),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      Icon(CupertinoIcons.shield_fill, size: 45),
-                      Text(
-                        "JSPM Pulse",
-                        style: TextStyle(
-                          color: Colors.black,
-                          fontSize: 35,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 10),
+            return Center(
+              child: Padding(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 10,
+                  vertical: 30,
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.center,
 
-                  Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Text(
-                      "Sign Up",
-                      style: TextStyle(
-                        color: Colors.black,
-                        fontSize: 45,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                  ),
-                  const SizedBox(height: 60),
-                  Column(
-                    mainAxisAlignment: MainAxisAlignment.end,
-                    children: [
-                      AppInputField(
-                        hint: "Email",
-                        icon: Icons.email,
-                        obscureText: false,
-                        controller: emailController,
-                      ),
-                      const SizedBox(height: 30),
-                      AppInputField(
-                        hint: "Password",
-                        icon: Icons.lock,
-                        obscureText: true,
-                        controller: passController,
-                      ),
-
-                      const SizedBox(height: 30),
-                      RoleDropdown(
-                        onRoleSelected: (role) => setState(() {
-                          selectedRole = role;
-                        }),
-                      ),
-                      const SizedBox(height: 30),
-                      AppBtn(
-                        height: 70,
-                        width: MediaQuery.of(context).size.width * 0.9,
-                        onTap: () {
-                          context.read<AuthBloc>().add(
-                            SignUpEvent(
-                              emailController.text,
-                              passController.text,
-                            ),
-                          );
-                        },
-                        child: const Text(
-                          "Create account",
+                  children: [
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        const Icon(CupertinoIcons.shield, size: 40),
+                        Text(
+                          "JSPM Pulse",
                           style: TextStyle(
-                            fontSize: 20,
+                            color: Colors.black,
+                            fontSize: 35,
                             fontWeight: FontWeight.bold,
                           ),
                         ),
+                      ],
+                    ),
+                    const SizedBox(height: 10),
+
+                    Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Text(
+                        "Sign Up",
+                        style: TextStyle(
+                          color: Colors.black,
+                          fontSize: 40,
+                          fontWeight: FontWeight.bold,
+                        ),
                       ),
-                      const SizedBox(height: 30),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Text(
-                            "Already have an account? ",
+                    ),
+                    const SizedBox(height: 60),
+                    Column(
+                      mainAxisAlignment: MainAxisAlignment.end,
+                      children: [
+                        AppInputField(
+                          hint: "Email",
+                          icon: Icons.email,
+                          obscureText: false,
+                          controller: emailController,
+                        ),
+                        const SizedBox(height: 30),
+                        AppInputField(
+                          hint: "Password",
+                          icon: Icons.lock,
+                          obscureText: true,
+                          controller: passController,
+                        ),
+
+                        const SizedBox(height: 30),
+                        RoleDropdown(
+                          onRoleSelected: (role) => setState(() {
+                            selectedRole = role;
+                          }),
+                        ),
+                        const SizedBox(height: 30),
+                        AppBtn(
+                          height: 70,
+                          width: MediaQuery.of(context).size.width * 0.9,
+                          onTap: () {
+                            context.read<AuthBloc>().add(
+                              SignUpEvent(
+                                emailController.text,
+                                passController.text,
+                              ),
+                            );
+                          },
+                          child: const Text(
+                            "Create account",
                             style: TextStyle(
-                              color: Colors.grey.shade900,
-                              fontSize: 15,
+                              fontSize: 20,
+                              fontWeight: FontWeight.bold,
                             ),
                           ),
-                          InkWell(
-                            onTap: () {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) => LogInScreen(),
-                                ),
-                              );
-                            },
-                            autofocus: true,
-                            focusColor: Colors.grey,
-                            child: const Text(
-                              "Login here.",
+                        ),
+                        const SizedBox(height: 30),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Text(
+                              "Already have an account? ",
                               style: TextStyle(
-                                color: primaryColor,
+                                color: Colors.grey.shade900,
                                 fontSize: 15,
                               ),
                             ),
-                          ),
-                        ],
-                      ),
-                    ],
-                  ),
-                ],
+                            InkWell(
+                              onTap: () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => LogInScreen(),
+                                  ),
+                                );
+                              },
+                              autofocus: true,
+                              focusColor: Colors.grey,
+                              child: const Text(
+                                "Login here.",
+                                style: TextStyle(
+                                  color: primaryColor,
+                                  fontSize: 15,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
               ),
             );
           },
