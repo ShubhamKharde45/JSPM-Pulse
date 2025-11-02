@@ -137,7 +137,6 @@ class _HomeScreenState extends State<HomeScreen> {
                 ],
               ),
             ),
-            const SizedBox(height: 20),
             Expanded(
               child: BlocBuilder<NoticeBloc, NoticeStates>(
                 builder: (context, state) {
