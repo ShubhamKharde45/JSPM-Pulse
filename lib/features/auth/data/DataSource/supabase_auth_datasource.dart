@@ -44,7 +44,6 @@ Future<void> addRoleToDB(String role, String userId) async {
 }
 
 
-
 Future<String?> getCurrentUserRole() async {
   final user = _supabaseClient.auth.currentUser;
   if (user == null) return null;

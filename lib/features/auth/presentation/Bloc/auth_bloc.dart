@@ -11,8 +11,6 @@ class AuthBloc extends Bloc<AuthEvent, AuthStates> {
     on<LogInEvent>(_onLogIn);
     on<LoadCurrentUserEvent>(_onLoadCurrentUserEvent);
     on<SignOutEvent>(_onSignOutEvent);
-    on<AddRoleDbEvent>(_onAddRoleDbEvent);
-    on<GetCurrentUserRoleEvent>(_onGetCurrentUserRoleEvent);
   }
 
   Future<void> _onSignUp(SignUpEvent event, Emitter<AuthStates> emit) async {
@@ -67,39 +65,9 @@ class AuthBloc extends Bloc<AuthEvent, AuthStates> {
     emit(AuthLoading());
     try {
       await useCases.signOut();
-      emit(AuthSignOut());
+      emit(AuthInitial());
     } catch (e) {
       emit(AuthFailure(e.toString()));
-    }
-  }
-
-Future<void> _onAddRoleDbEvent(
-  AddRoleDbEvent event,
-  Emitter<AuthStates> emit,
-) async {
-  try {
-    await useCases.addRoleToDbUseCase(event.role, event.userId);
-    emit(RoleToDBSuccess());
-  } catch (e) {
-    emit(RoleToDBFailure());
-  }
-}
-
-
-  Future<void> _onGetCurrentUserRoleEvent(
-    GetCurrentUserRoleEvent event,
-    Emitter<AuthStates> emit,
-  ) async {
-    emit(AuthLoading());
-    try {
-      final role = await useCases.getUserRoleUsecase();
-      if (role != null) {
-        emit(GetUserRoleSuccess(role));
-      } else {
-        emit(GetUserRoleFailure("Role not found for current user"));
-      }
-    } catch (e) {
-      emit(GetUserRoleFailure(e.toString()));
     }
   }
 }

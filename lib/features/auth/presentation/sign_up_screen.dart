@@ -32,9 +32,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
           listener: (context, state) {
             if (state is AuthSuccess) {
               final userId = state.user!.id;
-              context.read<AuthBloc>().add(
-                AddRoleDbEvent(selectedRole, userId),
-              );
+             
             } else if (state is RoleToDBSuccess) {
               Navigator.pushReplacement(
                 context,

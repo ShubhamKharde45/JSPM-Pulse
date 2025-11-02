@@ -1,12 +1,27 @@
 import 'package:flutter/material.dart';
 import 'package:jspm_pulse/features/notices/domain/entitis/notice_entity.dart';
+import 'package:jspm_pulse/core/service_locators/service_locator.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 class ViewNoticeScreen extends StatelessWidget {
   const ViewNoticeScreen({super.key, required this.notice});
   final Notice notice;
 
+  Future<String?> _getSignedUrl(String path) async {
+    try {
+      final client = getIt<SupabaseClient>();
+      final res = await client.storage
+          .from('attachments')
+          .createSignedUrl(path, 60 * 60);
+      return res;
+    } catch (e) {
+      debugPrint('Error fetching signed URL: $e');
+      return null;
+    }
+  }
+
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context) { // valid for 1 hour
     return Scaffold(
       appBar: AppBar(
         elevation: 0,
@@ -28,13 +43,16 @@ class ViewNoticeScreen extends StatelessWidget {
             borderRadius: BorderRadius.circular(10),
           ),
           child: Padding(
-            padding: const EdgeInsets.all(16.0),
+            padding: const EdgeInsets.all(16),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 // Category Tag
                 Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 10,
+                    vertical: 8,
+                  ),
                   decoration: BoxDecoration(
                     color: Colors.deepPurpleAccent.shade100,
                     borderRadius: BorderRadius.circular(10),
@@ -75,7 +93,6 @@ class ViewNoticeScreen extends StatelessWidget {
                       ),
                     ),
                     const SizedBox(width: 10),
-                    // Timestamp
                     Text(
                       "${notice.createdAt?.hour ?? 0}h ago",
                       style: TextStyle(
@@ -88,25 +105,44 @@ class ViewNoticeScreen extends StatelessWidget {
                 ),
 
                 const SizedBox(height: 40),
-                notice.attachments != null
-                    ? Container(
-                        height: 200,
-                        width: double.infinity,
-                        padding: const EdgeInsets.symmetric(horizontal: 25),
-                        decoration: BoxDecoration(
-                          color: Colors.grey.shade100,
-                          borderRadius: BorderRadius.circular(10),
+
+                if (notice.attachments != null &&
+                    notice.attachments!.isNotEmpty)
+                  FutureBuilder<String?>(
+                    future: _getSignedUrl(notice.attachments!),
+                    builder: (context, snapshot) {
+                      if (snapshot.connectionState == ConnectionState.waiting) {
+                        return const Center(child: CircularProgressIndicator());
+                      }
+                      if (snapshot.hasError || snapshot.data == null) {
+                        return Text(
+                          "Failed to load image",
+                          style: TextStyle(color: Colors.red.shade400),
+                        );
+                      }
+
+                      final imageUrl = snapshot.data!;
+                      return ClipRRect(
+                        borderRadius: BorderRadius.circular(12),
+                        child: Image.network(
+                          imageUrl,
+                          width: double.infinity,
+                          fit: BoxFit.cover,
+                          errorBuilder: (_, __, ___) =>
+                              const Icon(Icons.broken_image, size: 60),
                         ),
-                        child: const Center(child: Icon(Icons.image, size: 70)),
-                      )
-                    : Text(
-                        "[No attachments]",
-                        style: TextStyle(
-                          color: Colors.grey.shade500,
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
+                      );
+                    },
+                  )
+                else
+                  Text(
+                    "[No attachment]",
+                    style: TextStyle(
+                      color: Colors.grey.shade500,
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
               ],
             ),
           ),
