@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:jspm_pulse/features/notices/presentation/screens/create_notice_page.dart';
 import 'package:jspm_pulse/features/profile/presentation/pages/profile_screen.dart';
+import 'package:jspm_pulse/features/settings/presentation/screens/settings_screen.dart';
 
 class BottomSheetCont extends StatelessWidget {
   const BottomSheetCont({super.key});
@@ -32,6 +33,17 @@ class BottomSheetCont extends StatelessWidget {
             },
             leading: Icon(CupertinoIcons.person_crop_circle_fill, size: 35),
             title: Text("Profile", style: TextStyle(fontSize: 20)),
+          ),
+
+          ListTile(
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => SettingsScreen()),
+              );
+            },
+            leading: Icon(CupertinoIcons.settings, size: 35),
+            title: Text("Settings", style: TextStyle(fontSize: 20)),
           ),
         ],
       ),
