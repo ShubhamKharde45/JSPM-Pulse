@@ -21,7 +21,7 @@ void main() async {
   await Supabase.initialize(
     url: "https://cgokpagcgcbgswmbphrr.supabase.co",
     anonKey:
-        "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNnb2twYWdjZ2NiZ3N3bWJwaHJyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTY5OTQ4MTcsImV4cCI6MjA3MjU3MDgxN30.Qv7ElMqXDW6GbSMevuPpOJ7FQALa7SClwa28Uqj0tn4",
+        "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNnb2twYWdjZ2NiZ3N3bWJwaHJyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTY5OTQ4MTcsImV4cCI6MjA3MjU3MDgxN30.Qv7ElMqXDW6GbSMevuPpOJ7FQALa7SClwa28Uqj0tn4"
   );
 
   setupLocator();
