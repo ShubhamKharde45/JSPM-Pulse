@@ -1,13 +1,13 @@
 {
   "project_info": {
-    "project_number": "278692485280",
-    "project_id": "jspmpulse",
-    "storage_bucket": "jspmpulse.firebasestorage.app"
+    "project_number": "774197971599",
+    "project_id": "jspm-pulse-95848",
+    "storage_bucket": "jspm-pulse-95848.firebasestorage.app"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:278692485280:android:a3775f4fe845a95c5991c5",
+        "mobilesdk_app_id": "1:774197971599:android:6ceff31389f185e4623efa",
         "android_client_info": {
           "package_name": "com.example.jspm_pulse"
         }
@@ -15,7 +15,7 @@
       "oauth_client": [],
       "api_key": [
         {
-          "current_key": "AIzaSyAaWK8oGcWx59-76HMuXUaAuHGJ0JAWIwA"
+          "current_key": "AIzaSyB57lSJKJt5rX_N_61xnS1PMTzucgFLiS8"
         }
       ],
       "services": {

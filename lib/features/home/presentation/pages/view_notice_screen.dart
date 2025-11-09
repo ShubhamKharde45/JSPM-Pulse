@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:jspm_pulse/features/notices/domain/entitis/notice_entity.dart';
 import 'package:jspm_pulse/core/service_locators/service_locator.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:timeago/timeago.dart' as timeago;
 
 class ViewNoticeScreen extends StatelessWidget {
   const ViewNoticeScreen({super.key, required this.notice});
@@ -21,7 +22,8 @@ class ViewNoticeScreen extends StatelessWidget {
   }
 
   @override
-  Widget build(BuildContext context) { // valid for 1 hour
+  Widget build(BuildContext context) {
+    // valid for 1 hour
     return Scaffold(
       appBar: AppBar(
         elevation: 0,
@@ -94,10 +96,12 @@ class ViewNoticeScreen extends StatelessWidget {
                     ),
                     const SizedBox(width: 10),
                     Text(
-                      "${notice.createdAt?.hour ?? 0}h ago",
+                      timeago.format(
+                        notice.createdAt?.toLocal() ?? DateTime.now(),
+                      ),
                       style: TextStyle(
                         color: Colors.grey.shade500,
-                        fontSize: 16,
+                        fontSize: 18,
                         fontWeight: FontWeight.w500,
                       ),
                     ),

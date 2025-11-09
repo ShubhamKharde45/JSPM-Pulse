@@ -31,6 +31,8 @@ dependencies:
   bloc: ^9.0.0
   cupertino_icons: ^1.0.8
   file_picker: ^10.3.2
+  firebase_core: ^4.2.1
+  firebase_messaging: ^16.0.4
   flutter:
     sdk: flutter
   flutter_bloc: ^9.1.1
@@ -38,7 +40,7 @@ dependencies:
   get_it: ^8.2.0
   riverpod: ^2.6.1
   supabase_flutter: ^2.10.0
-  flutter_prevent_screen_capture: ^0.0.2
+  timeago: ^3.6.0
 
 dev_dependencies:
   flutter_lints: ^5.0.0

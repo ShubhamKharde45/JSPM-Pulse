@@ -7,23 +7,26 @@ class AppInputField extends StatelessWidget {
     this.icon,
     required this.obscureText,
     this.controller,
+    this.onChanged,
   });
+
   final String hint;
   final IconData? icon;
   final bool obscureText;
   final TextEditingController? controller;
+  final ValueChanged<String>? onChanged;
 
   @override
   Widget build(BuildContext context) {
     return Container(
       width: MediaQuery.of(context).size.width,
-      decoration: BoxDecoration(),
-
+      decoration: const BoxDecoration(),
       child: TextField(
-        obscureText: obscureText,
         controller: controller,
+        obscureText: obscureText,
+        onChanged: onChanged,
         decoration: InputDecoration(
-          contentPadding: EdgeInsets.symmetric(vertical: 15),
+          contentPadding: const EdgeInsets.symmetric(vertical: 15),
           hint: Row(
             mainAxisSize: MainAxisSize.min,
             mainAxisAlignment: MainAxisAlignment.start,

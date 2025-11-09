@@ -3,14 +3,13 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:jspm_pulse/core/constants/theme_const.dart';
 import 'package:jspm_pulse/core/service_locators/service_locator.dart';
 import 'package:jspm_pulse/core/widgets/app_input_field.dart';
-import 'package:jspm_pulse/features/auth/presentation/Bloc/auth_bloc.dart';
-import 'package:jspm_pulse/features/auth/presentation/Bloc/auth_events.dart';
 import 'package:jspm_pulse/features/home/presentation/pages/view_notice_screen.dart';
 import 'package:jspm_pulse/features/home/presentation/widgets/bottom_sheet_cont.dart';
 import 'package:jspm_pulse/features/notices/presentation/bloc/notice_bloc.dart';
 import 'package:jspm_pulse/features/notices/presentation/bloc/notice_events.dart';
 import 'package:jspm_pulse/features/notices/presentation/bloc/notice_states.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:timeago/timeago.dart' as timeago;
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -22,6 +21,8 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   String? userRole;
   bool roleFetched = false;
+  String _searchQuery = "";
+  final TextEditingController _searchController = TextEditingController();
 
   @override
   void initState() {
@@ -107,17 +108,12 @@ class _HomeScreenState extends State<HomeScreen> {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.start,
                 children: [
-                  InkWell(
-                    onTap: () {
-                      context.read<AuthBloc>().add(SignOutEvent());
-                    },
-                    child: const Text(
-                      "JSPM Pulse",
-                      style: TextStyle(
-                        color: Colors.deepPurple,
-                        fontWeight: FontWeight.bold,
-                        fontSize: 35,
-                      ),
+                  const Text(
+                    "JSPM Pulse",
+                    style: TextStyle(
+                      color: Colors.deepPurple,
+                      fontWeight: FontWeight.bold,
+                      fontSize: 35,
                     ),
                   ),
                   Text(
@@ -129,10 +125,16 @@ class _HomeScreenState extends State<HomeScreen> {
                     ),
                   ),
                   const SizedBox(height: 10),
-                  const AppInputField(
+                  AppInputField(
+                    controller: _searchController,
                     hint: "Search",
                     obscureText: false,
                     icon: Icons.search,
+                    onChanged: (value) {
+                      setState(() {
+                        _searchQuery = value.toLowerCase();
+                      });
+                    },
                   ),
                 ],
               ),
@@ -143,10 +145,18 @@ class _HomeScreenState extends State<HomeScreen> {
                   if (state is NoticeLoadingState) {
                     return const Center(child: CircularProgressIndicator());
                   } else if (state is NoticeLoadedState) {
-                    if (state.notices.isEmpty) {
+                    var filteredNotices = state.notices.where((notice) {
+                      final query = _searchQuery.toLowerCase();
+                      return notice.title.toLowerCase().contains(query) ||
+                          notice.description.toLowerCase().contains(query) ||
+                          (notice.category?.toLowerCase().contains(query) ??
+                              false);
+                    }).toList();
+
+                    if (filteredNotices.isEmpty) {
                       return const Center(
                         child: Text(
-                          "No notices available yet.",
+                          "No notices found.",
                           style: TextStyle(fontSize: 18, color: Colors.grey),
                         ),
                       );
@@ -155,9 +165,9 @@ class _HomeScreenState extends State<HomeScreen> {
                     return Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 20),
                       child: ListView.builder(
-                        itemCount: state.notices.length,
+                        itemCount: filteredNotices.length,
                         itemBuilder: (context, index) {
-                          final notice = state.notices[index];
+                          final notice = filteredNotices[index];
                           return Padding(
                             padding: const EdgeInsets.only(bottom: 20),
                             child: InkWell(
@@ -233,11 +243,13 @@ class _HomeScreenState extends State<HomeScreen> {
                                           ),
                                         ),
                                         Padding(
-                                          padding: const EdgeInsets.only(
-                                            top: 10,
-                                          ),
+                                          padding:
+                                              const EdgeInsets.only(top: 10),
                                           child: Text(
-                                            "${notice.createdAt?.hour ?? 0}h ago",
+                                            timeago.format(
+                                              notice.createdAt?.toLocal() ??
+                                                  DateTime.now(),
+                                            ),
                                             style: TextStyle(
                                               color: Colors.grey.shade500,
                                               fontSize: 18,

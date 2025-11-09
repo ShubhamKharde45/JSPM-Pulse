@@ -1,8 +1,11 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:jspm_pulse/core/service_locators/service_locator.dart';
 import 'package:jspm_pulse/features/auth/presentation/Bloc/auth_bloc.dart';
 import 'package:jspm_pulse/features/auth/presentation/Bloc/auth_events.dart';
+import 'package:jspm_pulse/features/auth/presentation/login_screen.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 class SettingsScreen extends StatefulWidget {
   const SettingsScreen({super.key});
@@ -33,8 +36,20 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   vertical: 5,
                   horizontal: 10,
                 ),
-                onTap: () {
-                  context.read<AuthBloc>().add(SignOutEvent());
+                onTap: () async {
+                  try {
+                    // await getIt<SupabaseClient>().auth.signOut();
+                    context.read<AuthBloc>().add(SignOutEvent());
+                    if (context.mounted) {
+                      Navigator.pushAndRemoveUntil(
+                        context,
+                        MaterialPageRoute(builder: (_) => const LogInScreen()),
+                        (route) => false,
+                      );
+                    }
+                  } catch (e) {
+                    debugPrint('Logout failed: $e');
+                  }
                 },
                 leading: Icon(Icons.logout, size: 35),
                 title: Text("logout", style: TextStyle(fontSize: 20)),
